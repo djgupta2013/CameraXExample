@@ -8,10 +8,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cameraxexample.R
+import com.cameraxexample.database.table.ImagePathTable
 import com.cameraxexample.databinding.ImageListBinding
-import java.io.File
 
-class AllImageAdapter(private val context: Context, private val imageList: ArrayList<File>) :
+class AllImageAdapter(private val context: Context, private val imageList: ArrayList<ImagePathTable>) :
     RecyclerView.Adapter<AllImageAdapter.MyViewHolder>() {
     private var listener: OnItemClickListener? = null
 
@@ -24,7 +24,7 @@ class AllImageAdapter(private val context: Context, private val imageList: Array
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         //holder.binding.ivImage.setImageURI(Uri.parse((imageList[position]).path))
         Glide.with(context)
-            .load(imageList[position])
+            .load(imageList[position].image_path)
             .into(holder.binding.ivImage)
         holder.binding.ivImage.setOnClickListener {
             listener?.onItemClick(position,it)
