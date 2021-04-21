@@ -16,6 +16,7 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -27,7 +28,11 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.cameraxexample.R
+import com.cameraxexample.UserApplication
+import com.cameraxexample.database.table.ImagePathTable
 import com.cameraxexample.databinding.ActivityCameraClickBinding
+import com.cameraxexample.liveData.viewModel.ImageViewModel
+import com.cameraxexample.liveData.viewModelFactory.ImageViewModelFactory
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,6 +45,9 @@ class CameraClickActivity : AppCompatActivity() {
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
     var isCameraRotate = true
+    private val imageViewModel: ImageViewModel by viewModels {
+        ImageViewModelFactory((application as UserApplication).imageRepository)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setFlags(
@@ -153,6 +161,10 @@ class CameraClickActivity : AppCompatActivity() {
             dialog.dismiss()
         }
         btnSave.setOnClickListener {
+            val c: Date = Calendar.getInstance().time
+            val df = SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault())
+            val formattedDate= df.format(c)
+            imageViewModel.insertImagePath(ImagePathTable(photoFile.absoluteFile.toString(),formattedDate))
             dialog.dismiss()
         }
     }

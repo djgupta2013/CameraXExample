@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         }
         imageViewModel.getAllImage.observe(this){images ->
             images.apply {
+                imageList.clear()
                 imageList.addAll(images)
                 adapter?.notifyDataSetChanged()
             }
