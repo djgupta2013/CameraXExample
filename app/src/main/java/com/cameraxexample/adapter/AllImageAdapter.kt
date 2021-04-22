@@ -5,14 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cameraxexample.R
 import com.cameraxexample.database.table.ImagePathTable
 import com.cameraxexample.databinding.ImageListBinding
 
-class AllImageAdapter(private val context: Context, private val imageList: ArrayList<ImagePathTable>) :
-    RecyclerView.Adapter<AllImageAdapter.MyViewHolder>() {
+class AllImageAdapter(private val context: Context) :
+    ListAdapter<ImagePathTable, AllImageAdapter.MyViewHolder>(
+        ImageComparator()
+    ) {
     private var listener: OnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -23,16 +27,13 @@ class AllImageAdapter(private val context: Context, private val imageList: Array
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         //holder.binding.ivImage.setImageURI(Uri.parse((imageList[position]).path))
+        val model = getItem(position)
         Glide.with(context)
-            .load(imageList[position].image_path)
+            .load(model.image_path)
             .into(holder.binding.ivImage)
         holder.binding.ivImage.setOnClickListener {
             listener?.onItemClick(position,it)
         }
-    }
-
-    override fun getItemCount(): Int {
-        return imageList.size
     }
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -45,5 +46,22 @@ class AllImageAdapter(private val context: Context, private val imageList: Array
 
     interface OnItemClickListener {
         fun onItemClick(position: Int, view: View)
+    }
+
+    class ImageComparator : DiffUtil.ItemCallback<ImagePathTable>() {
+        override fun areItemsTheSame(
+            oldItem: ImagePathTable,
+            newItem: ImagePathTable
+        ): Boolean {
+            return oldItem === newItem
+        }
+
+        override fun areContentsTheSame(
+            oldItem: ImagePathTable,
+            newItem: ImagePathTable
+        ): Boolean {
+            return oldItem.id == newItem.id
+        }
+
     }
 }

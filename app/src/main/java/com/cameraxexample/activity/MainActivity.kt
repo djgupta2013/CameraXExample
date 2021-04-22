@@ -2,9 +2,11 @@ package com.cameraxexample.activity
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -32,6 +34,16 @@ class MainActivity : AppCompatActivity() {
         ImageViewModelFactory((application as UserApplication).imageRepository)
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -50,11 +62,15 @@ class MainActivity : AppCompatActivity() {
         }
         imageViewModel.getAllImage.observe(this){images ->
             images.apply {
-                imageList.clear()
-                imageList.addAll(images)
-                adapter?.notifyDataSetChanged()
+                adapter?.submitList(images)
+
+                adapter?.currentList?.let { imageList.addAll(it) }
+                for (image in imageList){
+                    Log.e("image",image.id.toString())
+                }
             }
         }
+
         adapter?.notifyDataSetChanged()
         binding.fab.setOnClickListener {
             startActivity(Intent(this, CameraClickActivity::class.java))
@@ -63,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setRecyclerView() {
-        adapter = AllImageAdapter(this, imageList)
+        adapter = AllImageAdapter(this)
         binding.rvAllImages.layoutManager = GridLayoutManager(
             this, 4,
             GridLayoutManager.VERTICAL, false

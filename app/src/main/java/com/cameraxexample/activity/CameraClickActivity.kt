@@ -97,7 +97,7 @@ class CameraClickActivity : AppCompatActivity() {
         Log.e("files", files.toString())
 
         for (i in files.indices) {
-            Log.e("image path", files[i].path)
+           // Log.e("image path", files[i].path)
         }
     }
 
