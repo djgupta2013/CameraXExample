@@ -164,7 +164,7 @@ class CameraClickActivity : AppCompatActivity() {
             val c: Date = Calendar.getInstance().time
             val df = SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault())
             val formattedDate= df.format(c)
-            imageViewModel.insertImagePath(ImagePathTable(photoFile.absoluteFile.toString(),formattedDate))
+            imageViewModel.insertImagePath(ImagePathTable(photoFile.absoluteFile.toString(),formattedDate,false))
             dialog.dismiss()
         }
     }

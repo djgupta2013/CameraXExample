@@ -12,12 +12,14 @@ import com.bumptech.glide.Glide
 import com.cameraxexample.R
 import com.cameraxexample.database.table.ImagePathTable
 import com.cameraxexample.databinding.ImageListBinding
+import java.util.ArrayList
 
 class AllImageAdapter(private val context: Context) :
     ListAdapter<ImagePathTable, AllImageAdapter.MyViewHolder>(
         ImageComparator()
     ) {
     private var listener: OnItemClickListener? = null
+    private var imageCounter = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView =
@@ -26,13 +28,47 @@ class AllImageAdapter(private val context: Context) :
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        //holder.binding.ivImage.setImageURI(Uri.parse((imageList[position]).path))
         val model = getItem(position)
-        Glide.with(context)
-            .load(model.image_path)
-            .into(holder.binding.ivImage)
-        holder.binding.ivImage.setOnClickListener {
-            listener?.onItemClick(position,it)
+        holder.binding.apply {
+            Glide.with(context)
+                .load(model.image_path)
+                .into(ivImage)
+           ivImage.setOnClickListener {
+                listener?.onItemClick(position, it, model)
+            }
+            ivImage.setOnLongClickListener {
+                frameLayout.visibility = View.VISIBLE
+                model.isSelected = !model.isSelected
+                checkbox.isChecked = model.isSelected
+                if(model.isSelected){
+                    imageCounter++
+                }else{
+                    if(imageCounter != 0){
+                        imageCounter--
+                    }
+                }
+                notifyDataSetChanged()
+                true
+            }
+            checkbox.setOnClickListener {
+                model.isSelected = !model.isSelected
+                checkbox.isChecked = model.isSelected
+                if(model.isSelected){
+                    imageCounter++
+                }else{
+                    if(imageCounter != 0){
+                        imageCounter--
+                    }
+                }
+                notifyDataSetChanged()
+            }
+            if(imageCounter == 0){
+                listener?.imageSelected(false)
+                frameLayout.visibility = View.GONE
+            }else{
+                listener?.imageSelected(true)
+                frameLayout.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -45,7 +81,8 @@ class AllImageAdapter(private val context: Context) :
     }
 
     interface OnItemClickListener {
-        fun onItemClick(position: Int, view: View)
+        fun onItemClick(position: Int, view: View,model: ImagePathTable)
+        fun imageSelected(selected: Boolean)
     }
 
     class ImageComparator : DiffUtil.ItemCallback<ImagePathTable>() {

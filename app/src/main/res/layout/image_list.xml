@@ -10,12 +10,33 @@
         android:layout_height="100dp"
         android:layout_margin="0.5dp">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
         <ImageView
             android:id="@+id/ivImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/ic_camera_24"
             android:scaleType="fitXY"/>
+
+            <FrameLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="1dp"
+                android:visibility="gone">
+
+                <CheckBox
+                    android:id="@+id/checkbox"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+
+            </FrameLayout>
+
+        </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
 
